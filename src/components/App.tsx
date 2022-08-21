@@ -31,18 +31,14 @@ const App: FC = () => (
           alignItems="center"
           p="2rem"
         >
-          <Box m="auto" display="flex">
-            <Board />
-          </Box>
-
-          <Box m="auto" display="flex" flexDirection="column" gap="2rem" w="30%">
-            <Scoreboard />
-            <Box display="flex" justifyContent="center">
-              <GameControls />
+          <Box m="auto" display="flex" flexDirection="column">
+            <Box m="auto" display="flex" gap="4rem">
+              <Scoreboard />
+              <GameProgress />
             </Box>
-            <GameProgress />
+            <Board />
+            <GameControls />
           </Box>
-
         </Flex>
       </Container>
     </RecoilRoot>

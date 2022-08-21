@@ -13,26 +13,26 @@ const GameProgress: FC = () => {
 
   return (
 
-    <Box display="flex" flexDirection="column" alignItems="center">
+    <Box display="flex" flexDirection="column" alignItems="center" w="250px">
       <Heading
         as="h3"
-        fontSize="1.6rem"
+        fontSize="1.1rem"
+        fontWeight="bold"
         color="black"
         display="flex"
-        gap="0.5ch"
       >
         {`${playerDetails.name}${isGameOver ? ' wins!' : `'s turn`}`}
       </Heading>
 
       <Circle
         marginTop="1rem"
-        size="8rem"
+        size="6rem"
         boxShadow="base"
         bg={playerDetails.color}
       >
         {isGameOver && (
-          <Circle bg="background" size="7.2rem">
-            <FaGrinSquint size="4em" color="#17ABE2" />
+          <Circle bg="background" size="6rem">
+            <FaGrinSquint size="3.7em" color="#17ABE2" />
           </Circle>
         )}
       </Circle>

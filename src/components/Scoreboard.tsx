@@ -13,9 +13,9 @@ const containerStyles = {
   textColor: "white",
   padding: "1rem",
   rounded: 8,
-  minWidth: "300px",
-  maxWidth: "350px",
-  width: "80%",
+  minWidth: "200px",
+  maxWidth: "300px",
+  width: "100%",
 };
 
 const Scoreboard = () => {
