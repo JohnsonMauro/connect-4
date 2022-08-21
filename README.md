@@ -4,18 +4,22 @@ We have created a very simple Connect 4 game using some of our favorite [front-e
 
 ## Getting Started
 
-`npm i` - install dependences
+`npm i` - install dependencies
 
 `npm start` - run the application
 
 `npm t` - run the tests
+
+`npm run cy-open` - open cypress client
+
+`npm run cy-run` - run cypress tests
 
 ## Possible Improvements
 
 - Persist game state between sessions (hint - https://recoiljs.org/docs/guides/atom-effects#local-storage-persistence)
 - Record and present game stats
 - Allow players to select their name and color
-- Play againt a bot
+- Play against a bot
 - Increase unit test coverage
 - Add end-to-end tests
 - UX improvements

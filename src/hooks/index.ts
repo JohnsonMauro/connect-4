@@ -1,1 +1,4 @@
-export { default as usePlayPiece } from "./usePlayPiece";
+export * from "./usePlayPiece";
+export * from "./useGameState";
+export * from "./usePlayersSettings";
+export * from "./useScoreboard";

@@ -1,47 +1,80 @@
-import { Circle, Flex } from "@chakra-ui/react";
-import { boardRows, playerColor } from "const";
-import { usePlayPiece } from "hooks";
 import { FC } from "react";
-import { useRecoilValue } from "recoil";
-import { boardState, gameOverState, playerState } from "state";
-import { Player } from "types";
 
-const padCol = (col: number[]): number[] =>
-  col.join("").padEnd(boardRows, "0").split("").map(Number);
+import { useRecoilValue } from "recoil";
+import { boardState } from "state";
+
+import { Circle, Flex } from "@chakra-ui/react";
+
+import { boardRows } from "const";
+import { useGameState, usePlayersSettings, usePlayPiece } from "hooks";
+
+const getColumnCells = (col: number[]): number[] => {
+  const columnJoin = col.join("");
+  const columnFilledWithEmptyCells = columnJoin.padEnd(boardRows, "0");
+  const cellsArray = columnFilledWithEmptyCells.split("");
+  const cellsNumberArray = cellsArray.map(Number);
+
+  return cellsNumberArray;
+};
 
 const Board: FC = () => {
   const play = usePlayPiece();
   const board = useRecoilValue(boardState);
-  const player = useRecoilValue(playerState);
-  const gameOver = useRecoilValue(gameOverState);
+
+  const { currentPlayer, isGameOver } = useGameState();
+
+  const { firstPlayer, secondPlayer } = usePlayersSettings();
+
+  function getPieceColor(pieceValue: number) {
+    if (pieceValue === 1) return firstPlayer.color;
+
+    if (pieceValue === 2) return secondPlayer.color;
+
+    return null;
+  };
+
+  function getCellClassName(pieceValue: number) {
+    if (pieceValue === 1) return "playerOne";
+
+    if (pieceValue === 2) return "playerTwo";
+
+    return "empty";
+  };
 
   return (
     <Flex justify="center">
-      {board.map((col, i) => (
+      {board.map((col, colIndex) => (
         <Flex
-          key={i}
+          key={`board-col-${colIndex}`}
           role="group"
-          onClick={() => play(i)}
+          onClick={() => play(colIndex)}
           flexDirection="column-reverse"
-          cursor={gameOver ? "auto" : "pointer"}
+          cursor={isGameOver ? "auto" : "pointer"}
+          data-testid={`board-col-${colIndex}`}
+          className="board-col"
         >
-          {padCol(col).map((p, j) => (
+          {getColumnCells(col).map((pieceValue, index) => (
             <Circle
-              m={1}
-              size="40px"
-              key={`${i}-${j}`}
+              m={8}
+              size="4rem"
+              key={`board-col-${colIndex}-slot-${index}`}
+              data-testid={`board-col-${colIndex}-slot-${index}`}
               boxShadow="inner"
-              bg={playerColor[p as Player] || "gray.300"}
+              bg={getPieceColor(pieceValue) || "transparent"}
+              border={getPieceColor(pieceValue) ? "none" : "1px solid black"}
+              className={getCellClassName(pieceValue)}
+              transition="background-color 200ms ease"
             />
           ))}
           <Circle
-            m={1}
-            size="40px"
+            m={8}
+            size="4rem"
             boxShadow="base"
             visibility="hidden"
-            bg={playerColor[player]}
+            bg={getPieceColor(currentPlayer) || "transparent"}
+            transition="all 100ms ease"
             _groupHover={{
-              visibility: gameOver ? "hidden" : "visible",
+              visibility: isGameOver ? "hidden" : "visible",
             }}
           />
         </Flex>
@@ -50,4 +83,4 @@ const Board: FC = () => {
   );
 };
 
-export default Board;
+export { Board };

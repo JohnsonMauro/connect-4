@@ -1,18 +1,39 @@
-import { boardCols } from "const";
-import { atom } from "recoil";
-import { Board, Player } from "types";
+import { gameStateStorageKey } from "const";
+import { atom, AtomEffect } from "recoil";
+import { PlayerPieceType } from "state/types";
 
-export const boardState = atom<Board>({
-  key: "boardState",
-  default: Array(boardCols).fill([]),
-});
+const localStorageGameStateEffect =
+  (): AtomEffect<GameStateType> =>
+  ({ setSelf, onSet }) => {
+    const savedValue = localStorage.getItem(gameStateStorageKey);
 
-export const playerState = atom<Player>({
-  key: "playerState",
-  default: 1,
-});
+    if (savedValue) {
+      const parsedSavedValue = JSON.parse(savedValue);
 
-export const gameOverState = atom<boolean>({
-  key: "gameOverState",
-  default: false,
+      setSelf(parsedSavedValue);
+    }
+
+    onSet((newValue, _, isReset) => {
+      if (isReset) {
+        localStorage.removeItem(gameStateStorageKey);
+      } else {
+        localStorage.setItem(gameStateStorageKey, JSON.stringify(newValue));
+      }
+    });
+  };
+
+type GameStateType = {
+  turn: PlayerPieceType;
+  gameOver: boolean;
+};
+
+const defaultGameState: GameStateType = {
+  turn: 1,
+  gameOver: false,
+};
+
+export const gameState = atom<GameStateType>({
+  key: "gameState",
+  default: defaultGameState,
+  effects: [localStorageGameStateEffect()],
 });

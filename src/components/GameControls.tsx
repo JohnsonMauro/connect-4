@@ -1,25 +1,29 @@
 import { Button } from "@chakra-ui/react";
+import { useGameState } from "hooks";
 import { FC } from "react";
-import { useRecoilValue, useResetRecoilState } from "recoil";
-import { boardState, gameOverState, playerState } from "state";
 
 const GameControls: FC = () => {
-  const board = useRecoilValue(boardState);
-  const resetBoard = useResetRecoilState(boardState);
-  const resetPlayer = useResetRecoilState(playerState);
-  const resetGameOver = useResetRecoilState(gameOverState);
-
-  const handleReset = () => {
-    resetBoard();
-    resetPlayer();
-    resetGameOver();
-  };
+  const { handleResetGame, isGameStarted } = useGameState();
 
   return (
-    <Button onClick={handleReset} isDisabled={!board.some((col) => col.length)}>
-      Reset
+    <Button
+      data-testid="reset-game-button"
+      onClick={handleResetGame}
+      isDisabled={!isGameStarted}
+      background="blue1"
+      p="0.5rem 1rem"
+      mt="1rem"
+      rounded={8}
+      transition="all 200ms ease"
+      _hover={{
+        background: "blue2",
+      }}
+      textColor="white"
+      fontSize="1.5rem"
+    >
+      Reset the game
     </Button>
   );
 };
 
-export default GameControls;
+export { GameControls };

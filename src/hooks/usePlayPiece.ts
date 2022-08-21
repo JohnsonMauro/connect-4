@@ -1,17 +1,27 @@
-import { boardRows } from "const";
 import { useRecoilState } from "recoil";
-import { boardState, gameOverState, playerState } from "state";
 
-const testWin = (arr: number[]): boolean => /1{4}|2{4}/.test(arr.join(""));
+import { boardRows } from "const";
+import { boardState } from "state";
+
+import { useGameState } from "./useGameState";
+
+const testWin = (str: string): boolean => /([12])(\1{3}|(.{5}\1){3}|(.{6}\1){3}|(.{7}\1){3})/.test(str);
+
+const COLUMNS_NUMBERS = 6
 
 const usePlayPiece = () => {
   const [board, setBoard] = useRecoilState(boardState);
-  const [player, setPlayerTurn] = useRecoilState(playerState);
-  const [gameOver, setGameOver] = useRecoilState(gameOverState);
+
+  const {
+    currentPlayer,
+    isGameOver,
+    handleFinishMatch,
+    handleCurrentPlayerToggle,
+  } = useGameState();
 
   return (col: number) => {
     // Prevent adding a piece when the game is over
-    if (gameOver) {
+    if (isGameOver) {
       return;
     }
 
@@ -22,23 +32,29 @@ const usePlayPiece = () => {
 
     // Play piece (non mutating)
     const newBoard = board.map((column, i) =>
-      i === col ? [...column, player] : column
+      i === col ? [...column, currentPlayer] : column
     );
 
-    const row = newBoard[col].length - 1;
+    /*
+      Solution obtained from the link: https://stackoverflow.com/questions/66295225/checking-for-diagonals-in-game
+      * A vertical four-in-a-row will have four occurrences of "1" (or "2") next to each other.
+      * A horizontal four-in-a-row will have four occurrences of "1" (or "2"), where each pair is separated by 6 characters -- which can be anything (one will be a ":")
+      * A diagonal four-in-a-row will have such pairs separated by 7 characters (if slanted downward) or by 5 characters (if slanted upwards).
+    */
+    function patternBoardToString(column: number[]): string {
+      return '0'.repeat(COLUMNS_NUMBERS - column.length) + column.map((slot) => slot).reverse().join("")
+    }
 
-    if (
-      testWin(newBoard[col]) || // Did win vertically
-      testWin(newBoard.map((col) => col[row] || 0)) // Did win horizontally
-      // TODO: Did win diagonally
-    ) {
-      setGameOver(true);
+    const patternVictory = newBoard.map(col => patternBoardToString(col)).join(":")
+
+    if (testWin(patternVictory)) {
+      handleFinishMatch();
     } else {
-      setPlayerTurn(player === 1 ? 2 : 1);
+      handleCurrentPlayerToggle();
     }
 
     setBoard(newBoard);
   };
 };
 
-export default usePlayPiece;
+export { usePlayPiece };
